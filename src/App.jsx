@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import ScrollTop from './components/ScrollTop'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
@@ -11,21 +11,24 @@ import CartPage from './pages/CartPage'
 import CheckoutPage from './pages/CheckoutPage'
 import InvoicePage from './pages/InvoicePage'
 import MyOrdersPage from './pages/MyOrdersPage'
-
+import About from './pages/About'
 import AdminLayout from './admin/AdminLayout'
 import AdminLoginPage from './admin/AdminLoginPage'
 import AdminDashboardPage from './admin/AdminDashboardPage'
-import AdminProductsPage from './admin/AdminProductsPage'
+import AdminProductsPage from "./admin/AdminProductPage"
 import AdminCategoriesPage from './admin/AdminCategoriesPage'
 import AdminProfitRecapPage from './admin/AdminProfitRecapPage'
 
 function PublicLayout({ children }) {
+    const location = useLocation()
+    const hideFooter = location.pathname === '/'
+
     return (
         <>
             <ScrollTop />
             <Navbar />
             {children}
-            <Footer />
+            {!hideFooter && <Footer />}
         </>
     )
 }
@@ -44,13 +47,14 @@ function App() {
                         <Route path="profit" element={<AdminProfitRecapPage />} />
                     </Route>
 
-                    {/* Public — pakai Navbar/Footer */}
+                    {/* Public — pakai Navbar/Footer (Footer disembunyikan khusus di Home) */}
                     <Route
                         path="/*"
                         element={
                             <PublicLayout>
                                 <Routes>
                                     <Route path="/" element={<Home />} />
+                                    <Route path="/about" element={<About />} />
                                     <Route path="/galery" element={<Galery />} />
                                     <Route path="/contact" element={<Contact />} />
                                     <Route path="/menu" element={<MenuPage />} />
