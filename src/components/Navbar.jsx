@@ -7,7 +7,7 @@ const navLinks = [
     { label: "Home", to: "/", type: "link" },
     { label: "Tentang", to: "/about", type: "link" },
     { label: "Menu", to: "/menu", type: "link" },
-    { label: "Location", to: "/#location", type: "anchor" },
+    { label: "Location", to: "/location", type: "link" },
     { label: "Galery", to: "/galery", type: "link" },
     { label: "Pesanan Saya", to: "/pesanan-saya", type: "link" },
     { label: "Contact", to: "/contact", type: "link" },

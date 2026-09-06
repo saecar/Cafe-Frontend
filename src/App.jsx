@@ -12,6 +12,7 @@ import CheckoutPage from './pages/CheckoutPage'
 import InvoicePage from './pages/InvoicePage'
 import MyOrdersPage from './pages/MyOrdersPage'
 import About from './pages/About'
+import LocationPage from './pages/LocationPage'
 import AdminLayout from './admin/AdminLayout'
 import AdminLoginPage from './admin/AdminLoginPage'
 import AdminDashboardPage from './admin/AdminDashboardPage'
@@ -55,6 +56,7 @@ function App() {
                                 <Routes>
                                     <Route path="/" element={<Home />} />
                                     <Route path="/about" element={<About />} />
+                                    <Route path="/location" element={<LocationPage />} />
                                     <Route path="/galery" element={<Galery />} />
                                     <Route path="/contact" element={<Contact />} />
                                     <Route path="/menu" element={<MenuPage />} />

@@ -18,6 +18,19 @@ import { useCart } from "../context/CartContext"
  * - src/context/CartContext.jsx → useCart() (addItem, totalItems, totalPrice)
  * - navigate ke /menu, /cart, /checkout — endpoint tetap sama
  *
+ * REVISI RESPONSIVE (tablet & mobile):
+ * - Semua section dua-kolom (hero, manifesto, editorial, lokasi) sekarang
+ *   pecah jadi 2 kolom mulai breakpoint `md` (768px), bukan `lg` (1024px),
+ *   supaya iPad/tablet portrait tidak menumpuk teks jadi satu kolom panjang.
+ * - Skala tipografi hero & italic accent dikecilkan sedikit di `md` supaya
+ *   tidak overflow saat kolomnya sudah menyempit jadi ~7/12.
+ * - Reel produk sekarang punya langkah `sm(2) → md(3) → lg(4)` kolom,
+ *   sebelumnya lompat langsung dari 1 kolom (scroll) ke 2 kolom di `sm`
+ *   lalu ke 4 kolom di `lg`, yang bikin tablet terasa longgar/canggung.
+ * - Tap target (tombol, ikon) dipastikan minimal ~40px di semua ukuran.
+ * - Beberapa padding/gap section dirapikan supaya tidak terlalu lebar di
+ *   tablet dan tidak terlalu sempit di mobile kecil (320–375px).
+ *
  * Font: Plus Jakarta Sans (body/UI) + Instrument Serif italic (aksen
  * editorial). Tambahkan ke index.html:
  *
@@ -177,7 +190,7 @@ export default function Home() {
             {/* Ticker + nav dirender oleh <Navbar /> global (src/components/Navbar.jsx) */}
             <main>
                 {/* HERO */}
-                <section ref={heroRef} id="home" className="relative pt-8 pb-12 sm:pb-16 overflow-hidden">
+                <section ref={heroRef} id="home" className="relative pt-6 sm:pt-8 pb-10 sm:pb-16 overflow-hidden">
                     <div
                         aria-hidden="true"
                         className="absolute inset-0 pointer-events-none"
@@ -193,10 +206,10 @@ export default function Home() {
                             className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-5 border-b border-[#E6DDD2] mb-6 sm:mb-8"
                         >
                             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#F9F3EB] border border-[#E6DDD2] text-[#C86D44] font-mono text-[11px] sm:text-xs font-bold tracking-wider uppercase w-fit">
-                                <span className="w-1.5 h-1.5 rounded-full bg-[#C86D44] animate-pulse" />
-                                Edisi Vol. 02 — Jakarta Artisan Archive
+                                <span className="w-1.5 h-1.5 rounded-full bg-[#C86D44] animate-pulse shrink-0" />
+                                <span>Edisi Vol. 02 — Jakarta Artisan Archive</span>
                             </div>
-                            <div className="hidden sm:flex items-center gap-2 text-xs font-medium text-[#342822]/80 font-mono">
+                            <div className="hidden md:flex items-center gap-2 text-xs font-medium text-[#342822]/80 font-mono">
                                 <span>Tersedia:</span>
                                 <span className="text-[#231B17] font-bold px-2 py-0.5 rounded bg-[#F9F3EB] border border-[#E6DDD2]/70">
                                     Gayo Wine &amp; Ciwidey Natural
@@ -204,17 +217,17 @@ export default function Home() {
                             </div>
                         </motion.div>
 
-                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-end mb-6 sm:mb-8">
-                            <motion.div {...reveal(revealLeft)} className="lg:col-span-7">
-                                <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-[5.2rem] leading-[0.95] tracking-tighter font-extrabold text-[#17120F]">
+                        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-10 lg:gap-12 md:items-end mb-6 sm:mb-8">
+                            <motion.div {...reveal(revealLeft)} className="md:col-span-7">
+                                <h1 className="text-4xl sm:text-6xl md:text-6xl lg:text-[5.2rem] leading-[0.95] tracking-tighter font-extrabold text-[#17120F] break-words">
                                     Radical
                                     <br />
-                                    <span className="font-editorial-italic italic font-normal text-[#C86D44] text-5xl sm:text-7xl md:text-8xl lg:text-[6rem]">
+                                    <span className="font-editorial-italic italic font-normal text-[#C86D44] text-5xl sm:text-7xl md:text-7xl lg:text-[6rem]">
                                         Roastery.
                                     </span>
                                 </h1>
                             </motion.div>
-                            <motion.div {...reveal(revealRight)} className="lg:col-span-5 lg:pb-2 flex flex-col justify-end">
+                            <motion.div {...reveal(revealRight)} className="md:col-span-5 md:pb-2 flex flex-col justify-end">
                                 <p className="text-[#342822] text-sm sm:text-base leading-relaxed mb-4">
                                     Kolektif kopi artisan &amp; sajian santap kontemporer di Senopati. Seduhan presisi,
                                     pastry mentega murni fajar hari, serta ruang santai berkarakter studio avant-garde.
@@ -239,7 +252,7 @@ export default function Home() {
                             transition={SPRING_SOFT}
                             className="relative rounded-2xl overflow-hidden border border-[#E6DDD2] shadow-[0_10px_30px_-8px_rgba(35,27,23,0.10)] bg-[#17120F]"
                         >
-                            <div className="relative h-[280px] sm:h-[420px] md:h-[500px] w-full overflow-hidden">
+                            <div className="relative h-[240px] xs:h-[280px] sm:h-[380px] md:h-[440px] lg:h-[500px] w-full overflow-hidden">
                                 <motion.img
                                     style={prefersReducedMotion ? undefined : { scale: heroImageScale }}
                                     alt="Barista artisanal menuangkan pour over di bar MR. R Senopati"
@@ -248,15 +261,15 @@ export default function Home() {
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-[#17120F]/95 via-[#17120F]/30 to-transparent" />
 
-                                <div className="absolute top-3 left-3 sm:top-6 sm:left-6 flex flex-col gap-2 z-10">
+                                <div className="absolute top-3 left-3 sm:top-6 sm:left-6 flex flex-col gap-2 z-10 max-w-[75%] sm:max-w-none">
                                     <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#17120F]/85 backdrop-blur-md text-[#F1E7DA] border border-white/15 text-[11px] sm:text-xs font-medium w-fit">
-                                        <span className="w-2 h-2 rounded-full bg-[#C86D44]" />
-                                        Cold Drip &amp; Handpour Bar
+                                        <span className="w-2 h-2 rounded-full bg-[#C86D44] shrink-0" />
+                                        <span>Cold Drip &amp; Handpour Bar</span>
                                     </span>
                                     <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#231B17]/85 backdrop-blur-md border border-white/15 text-[#F9F3EB] text-xs font-semibold w-fit">
                                         <span className="text-amber-300">★</span>
                                         <span>4.9 / 5.0</span>
-                                        <span className="text-[#E4D5C1] font-normal">(2.4k+ ulasan)</span>
+                                        <span className="text-[#E4D5C1] font-normal hidden xs:inline">(2.4k+ ulasan)</span>
                                     </div>
                                 </div>
 
@@ -264,7 +277,7 @@ export default function Home() {
                                     <div className="text-[10px] font-mono tracking-widest text-[#C86D44] uppercase mb-1">
                                         Origin Archive
                                     </div>
-                                    <p className="font-editorial-italic italic text-base sm:text-lg text-white leading-tight mb-1">
+                                    <p className="font-editorial-italic italic text-sm sm:text-lg text-white leading-tight mb-1">
                                         "Setiap cangkir, setiap gigitan, setiap detik berarti."
                                     </p>
                                     <p className="text-[10px] text-[#E4D5C1] font-mono">
@@ -273,7 +286,7 @@ export default function Home() {
                                 </div>
                             </div>
 
-                            <div className="bg-[#231B17] border-t border-[#342822] p-4 sm:p-5 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+                            <div className="bg-[#231B17] border-t border-[#342822] p-4 sm:p-5 sm:px-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
                                 <div className="flex items-center gap-2.5 text-xs text-[#F1E7DA] w-full sm:w-auto min-w-0">
                                     <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
                                     <span className="font-mono text-[#C86D44] uppercase text-[11px] font-bold shrink-0">
@@ -318,7 +331,7 @@ export default function Home() {
                 </div>
 
                 {/* PRODUCT REEL */}
-                <section className="py-12 sm:py-16 bg-[#F9F3EB]/70 border-b border-[#E6DDD2]" id="curation">
+                <section className="py-10 sm:py-16 bg-[#F9F3EB]/70 border-b border-[#E6DDD2]" id="curation">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <motion.div
                             {...reveal(revealUp)}
@@ -339,14 +352,14 @@ export default function Home() {
                                     </motion.span>{" "}
                                     / {reelCount}
                                 </span>
-                                <div className="flex items-center gap-1.5">
+                                <div className="flex items-center gap-1.5 md:hidden">
                                     <motion.button
                                         aria-label="Menu sebelumnya"
                                         onClick={() => scrollReel(-1)}
                                         whileHover={{ scale: 1.06 }}
                                         whileTap={{ scale: 0.94 }}
                                         transition={SPRING_GENTLE}
-                                        className="w-10 h-10 sm:w-9 sm:h-9 rounded-full border border-[#E6DDD2] bg-white hover:bg-[#C86D44] hover:text-white transition-colors flex items-center justify-center text-[#342822] shadow-sm"
+                                        className="w-10 h-10 rounded-full border border-[#E6DDD2] bg-white hover:bg-[#C86D44] hover:text-white transition-colors flex items-center justify-center text-[#342822] shadow-sm"
                                     >
                                         <ArrowLeftIcon />
                                     </motion.button>
@@ -356,7 +369,7 @@ export default function Home() {
                                         whileHover={{ scale: 1.06 }}
                                         whileTap={{ scale: 0.94 }}
                                         transition={SPRING_GENTLE}
-                                        className="w-10 h-10 sm:w-9 sm:h-9 rounded-full border border-[#E6DDD2] bg-white hover:bg-[#C86D44] hover:text-white transition-colors flex items-center justify-center text-[#342822] shadow-sm"
+                                        className="w-10 h-10 rounded-full border border-[#E6DDD2] bg-white hover:bg-[#C86D44] hover:text-white transition-colors flex items-center justify-center text-[#342822] shadow-sm"
                                     >
                                         <ArrowRightIcon />
                                     </motion.button>
@@ -378,7 +391,7 @@ export default function Home() {
                                 {[0, 1, 2].map((i) => (
                                     <div
                                         key={i}
-                                        className="min-w-[270px] sm:min-w-[280px] h-[340px] rounded-2xl bg-[#F1E7DA] animate-pulse shrink-0"
+                                        className="min-w-[250px] sm:min-w-[280px] h-[320px] sm:h-[340px] rounded-2xl bg-[#F1E7DA] animate-pulse shrink-0"
                                     />
                                 ))}
                             </div>
@@ -395,7 +408,7 @@ export default function Home() {
                                 <motion.div
                                     ref={reelRef}
                                     {...reveal(staggerParent, 0.05)}
-                                    className="flex gap-4 sm:gap-6 overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-2 lg:grid-cols-4"
+                                    className="flex gap-4 sm:gap-5 md:gap-6 overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
                                 >
                                     {products.map((product, i) => (
                                         <ProductCard
@@ -438,16 +451,16 @@ export default function Home() {
                 </section>
 
                 {/* MANIFESTO */}
-                <section className="py-16 sm:py-20 bg-[#17120F] text-[#F1E7DA]" id="manifesto">
+                <section className="py-14 sm:py-20 bg-[#17120F] text-[#F1E7DA]" id="manifesto">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start mb-10 sm:mb-16">
-                            <motion.div {...reveal(revealLeft)} className="lg:col-span-7">
+                        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-10 lg:gap-12 md:items-start mb-10 sm:mb-16">
+                            <motion.div {...reveal(revealLeft)} className="md:col-span-7">
                                 <span className="text-[#C86D44] font-mono text-xs tracking-widest uppercase block mb-2 sm:mb-3">
                                     02 / Manifesto Seduhan
                                 </span>
-                                <h2 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-tight">
+                                <h2 className="text-2xl sm:text-4xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-tight">
                                     Kopi bukan rutinitas biasa,{" "}
-                                    <span className="font-editorial-italic italic font-normal text-[#C86D44] text-3xl sm:text-5xl lg:text-6xl">
+                                    <span className="font-editorial-italic italic font-normal text-[#C86D44] text-3xl sm:text-5xl md:text-4xl lg:text-6xl">
                                         tapi sebuah pernyataan sikap.
                                     </span>
                                 </h2>
@@ -460,13 +473,13 @@ export default function Home() {
 
                             <motion.div
                                 {...reveal(revealRight)}
-                                className="lg:col-span-5 bg-[#231B17]/90 rounded-2xl p-4 sm:p-7 border border-white/10 shadow-[0_10px_30px_-8px_rgba(0,0,0,0.25)]"
+                                className="md:col-span-5 bg-[#231B17]/90 rounded-2xl p-4 sm:p-7 border border-white/10 shadow-[0_10px_30px_-8px_rgba(0,0,0,0.25)]"
                             >
-                                <div className="flex items-center justify-between pb-3 border-b border-white/10 mb-3">
+                                <div className="flex items-center justify-between pb-3 border-b border-white/10 mb-3 gap-2">
                                     <span className="text-[11px] sm:text-xs font-mono tracking-wider text-[#C86D44] uppercase font-semibold">
                                         Standar Seduh &amp; Lab
                                     </span>
-                                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-white/10 text-[#F1E7DA]">
+                                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-white/10 text-[#F1E7DA] shrink-0">
                                         Lab Grade
                                     </span>
                                 </div>
@@ -479,7 +492,7 @@ export default function Home() {
                             </motion.div>
                         </div>
 
-                        <motion.div {...reveal(staggerParent, 0.15)} className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+                        <motion.div {...reveal(staggerParent, 0.15)} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
                             {[
                                 {
                                     tag: "01. Kejujuran Rasa",
@@ -505,7 +518,7 @@ export default function Home() {
                                     variants={revealUp}
                                     whileHover={{ y: -4 }}
                                     transition={SPRING_GENTLE}
-                                    className="bg-[#231B17]/70 border border-white/10 rounded-2xl p-6 sm:p-7 flex flex-col justify-between shadow-[0_10px_30px_-8px_rgba(0,0,0,0.2)]"
+                                    className="bg-[#231B17]/70 border border-white/10 rounded-2xl p-6 sm:p-7 flex flex-col justify-between shadow-[0_10px_30px_-8px_rgba(0,0,0,0.2)] sm:first:col-span-2 md:first:col-span-1"
                                 >
                                     <div>
                                         <span className="text-[#C86D44] font-mono text-[11px] tracking-wider uppercase block mb-3 font-semibold">
@@ -514,7 +527,7 @@ export default function Home() {
                                         <h3 className="text-lg sm:text-xl font-bold text-white mb-2.5 leading-snug">{card.title}</h3>
                                         <p className="text-xs text-[#E4D5C1] leading-relaxed">{card.desc}</p>
                                     </div>
-                                    <div className="mt-6 pt-4 border-t border-white/10 text-[11px] font-mono text-[#C86D44] font-semibold uppercase flex items-center justify-between">
+                                    <div className="mt-6 pt-4 border-t border-white/10 text-[11px] font-mono text-[#C86D44] font-semibold uppercase flex items-center justify-between gap-2">
                                         <span>{card.foot}</span>
                                         <span>→</span>
                                     </div>
@@ -525,14 +538,14 @@ export default function Home() {
                 </section>
 
                 {/* EDITORIAL / ARSITEKTUR */}
-                <section className="py-16 sm:py-20 bg-[#FDFBF7]" id="editorial">
+                <section className="py-14 sm:py-20 bg-[#FDFBF7]" id="editorial">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-                            <motion.div {...reveal(revealUp)} className="lg:col-span-7">
+                        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-10 lg:gap-12 md:items-center">
+                            <motion.div {...reveal(revealUp)} className="md:col-span-7">
                                 <div className="relative rounded-2xl overflow-hidden border border-[#E6DDD2] shadow-[0_10px_30px_-8px_rgba(35,27,23,0.10)]">
                                     <img
                                         alt="Fasad kedai MR. R Coffee & Eatery di Jalan Senopati Raya Jakarta"
-                                        className="w-full h-[240px] sm:h-[380px] md:h-[460px] object-cover"
+                                        className="w-full h-[220px] sm:h-[340px] md:h-[400px] lg:h-[460px] object-cover"
                                         src="https://lh3.googleusercontent.com/aida-public/AB6AXuBZUz7FsttlPKzxIfC69aYxpwAwLXfq4X0kun3vrxeE5j3D5gZESQ2UAkORbpcGtWUC1Qh0nS32vfHnJWbU7LppY2g0Btgw3RBBLK5f6fZ3EWLn-FHweeFiD5hbDcnkGCTJfTLyOR95xIA3PvDzaFmrdAQKFFFbrneYn1jDHn_cZT7FBPGmBKHq80bZPUIRcHgj8tVHEEhW6fl7GREpBtyVO3gNi4IMoARI_OlMJS7ZHvMpD0zzAZJdOg"
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-[#17120F]/85 via-transparent to-transparent" />
@@ -548,11 +561,11 @@ export default function Home() {
                                 </div>
                             </motion.div>
 
-                            <motion.div {...reveal(revealRight)} className="lg:col-span-5">
+                            <motion.div {...reveal(revealRight)} className="md:col-span-5">
                                 <span className="text-[#C86D44] font-mono text-xs tracking-widest uppercase block mb-1.5">
                                     03 / Arsitektur &amp; Ruang
                                 </span>
-                                <h2 className="text-2xl sm:text-4xl font-extrabold text-[#17120F] tracking-tight leading-tight mb-3">
+                                <h2 className="text-2xl sm:text-4xl md:text-3xl lg:text-4xl font-extrabold text-[#17120F] tracking-tight leading-tight mb-3">
                                     Estetika Minimalis, Energi Dinamis.
                                 </h2>
                                 <p className="text-[#342822] text-xs sm:text-sm leading-relaxed mb-6">
@@ -594,31 +607,31 @@ export default function Home() {
                 </section>
 
                 {/* RESERVASI / LOKASI */}
-                <section className="py-16 sm:py-20 bg-[#F9F3EB]/60 border-t border-[#E6DDD2]" id="location">
+                <section className="py-14 sm:py-20 bg-[#F9F3EB]/60 border-t border-[#E6DDD2]" id="location">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <motion.div
                             {...reveal(revealUp, 0.2)}
-                            className="bg-gradient-to-br from-[#F8ECE6]/80 via-[#F9F3EB] to-[#F1E7DA]/90 rounded-2xl sm:rounded-3xl border border-[#E6DDD2] p-6 sm:p-10 md:p-12 shadow-[0_10px_30px_-8px_rgba(35,27,23,0.08)]"
+                            className="bg-gradient-to-br from-[#F8ECE6]/80 via-[#F9F3EB] to-[#F1E7DA]/90 rounded-2xl sm:rounded-3xl border border-[#E6DDD2] p-5 sm:p-10 md:p-12 shadow-[0_10px_30px_-8px_rgba(35,27,23,0.08)]"
                         >
-                            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 items-center">
-                                <div className="lg:col-span-7 flex flex-col justify-between">
+                            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-10 lg:gap-12 md:items-center">
+                                <div className="md:col-span-7 flex flex-col justify-between">
                                     <span className="text-[#C86D44] font-mono text-xs tracking-widest uppercase block mb-2.5 font-bold">
                                         04 / Kunjungi &amp; Reservasi
                                     </span>
-                                    <h2 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-[#17120F] tracking-tight mb-3.5 leading-tight">
+                                    <h2 className="text-2xl sm:text-4xl md:text-3xl lg:text-5xl font-extrabold text-[#17120F] tracking-tight mb-3.5 leading-tight">
                                         Siap untuk cangkir berikutnya?
                                     </h2>
                                     <p className="text-[#342822] text-xs sm:text-sm leading-relaxed mb-6 max-w-lg">
                                         {ADDRESS}. Tersedia valet parking, area indoor ber-AC, dan semi-outdoor garden.
                                     </p>
                                     <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-5 border border-[#E6DDD2] max-w-md space-y-3 font-mono text-xs shadow-sm">
-                                        <div className="flex justify-between items-center text-[#231B17] pb-3 border-b border-[#E6DDD2]/70">
+                                        <div className="flex flex-wrap justify-between items-center gap-x-3 gap-y-1 text-[#231B17] pb-3 border-b border-[#E6DDD2]/70">
                                             <span className="font-sans font-semibold text-xs text-[#342822]">
                                                 Senin — Jumat (WFC)
                                             </span>
                                             <span className="font-bold text-[#C86D44]">10:00 — 00:00 WIB</span>
                                         </div>
-                                        <div className="flex justify-between items-center text-[#231B17]">
+                                        <div className="flex flex-wrap justify-between items-center gap-x-3 gap-y-1 text-[#231B17]">
                                             <span className="font-sans font-semibold text-xs text-[#342822]">
                                                 Sabtu — Minggu (Brunch)
                                             </span>
@@ -629,10 +642,10 @@ export default function Home() {
 
                                 <motion.div
                                     {...reveal(revealRight, 0.2)}
-                                    className="lg:col-span-5 bg-[#17120F] text-white rounded-2xl p-6 sm:p-8 border border-white/10 shadow-[0_10px_30px_-8px_rgba(0,0,0,0.3)]"
+                                    className="md:col-span-5 bg-[#17120F] text-white rounded-2xl p-6 sm:p-8 border border-white/10 shadow-[0_10px_30px_-8px_rgba(0,0,0,0.3)]"
                                 >
                                     <div className="flex items-center gap-2.5 mb-2.5">
-                                        <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                                        <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0" />
                                         <span className="text-[10px] font-mono tracking-widest text-[#E4D5C1] uppercase font-semibold">
                                             Fast Response Concierge
                                         </span>
@@ -688,9 +701,10 @@ export default function Home() {
                         animate={{ y: 0, opacity: 1, scale: 1 }}
                         exit={prefersReducedMotion ? { opacity: 0 } : { y: 80, opacity: 0, scale: 0.95 }}
                         transition={SPRING_GENTLE}
-                        className="fixed bottom-4 right-4 left-4 sm:left-auto sm:bottom-6 sm:right-6 z-50"
+                        className="fixed bottom-3 right-3 left-3 sm:left-auto sm:bottom-6 sm:right-6 z-50"
+                        style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
                     >
-                        <div className="bg-[#17120F] text-white rounded-2xl p-3 sm:p-4 border border-white/10 shadow-[0_12px_32px_-4px_rgba(0,0,0,0.35)] flex items-center gap-3 sm:gap-4 sm:max-w-[92vw] sm:w-auto">
+                        <div className="bg-[#17120F] text-white rounded-2xl p-3 sm:p-4 border border-white/10 shadow-[0_12px_32px_-4px_rgba(0,0,0,0.35)] flex items-center gap-2.5 sm:gap-4 sm:max-w-[92vw] sm:w-auto">
                             <div className="h-10 w-10 bg-[#C86D44] text-white rounded-full flex items-center justify-center font-mono font-bold text-sm shrink-0">
                                 {totalItems}
                             </div>
@@ -702,13 +716,13 @@ export default function Home() {
                                 whileHover={{ scale: 1.03 }}
                                 whileTap={{ scale: 0.95 }}
                                 transition={SPRING_GENTLE}
-                                className="px-4 py-2.5 rounded-xl bg-[#C86D44] hover:bg-[#B55E36] text-white font-mono text-[11px] sm:text-xs font-bold uppercase transition-colors shrink-0 whitespace-nowrap"
+                                className="px-3.5 sm:px-4 py-2.5 rounded-xl bg-[#C86D44] hover:bg-[#B55E36] text-white font-mono text-[11px] sm:text-xs font-bold uppercase transition-colors shrink-0 whitespace-nowrap"
                                 onClick={() => navigate("/checkout")}
                             >
                                 Checkout →
                             </motion.button>
                             <button
-                                className="text-[#E4D5C1] hover:text-white transition-colors shrink-0 p-1"
+                                className="text-[#E4D5C1] hover:text-white transition-colors shrink-0 p-1.5 -m-1.5"
                                 onClick={() => setDrawerDismissed(true)}
                                 aria-label="Tutup"
                             >
@@ -720,7 +734,7 @@ export default function Home() {
             </AnimatePresence>
 
             {/* FOOTER */}
-            <footer className="bg-[#17120F] text-[#E4D5C1] pt-14 sm:pt-16 pb-10 sm:pb-12 border-t border-[#342822]">
+            <footer className="bg-[#17120F] text-[#E4D5C1] pt-12 sm:pt-16 pb-8 sm:pb-12 border-t border-[#342822]">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <motion.div
                         {...reveal(revealUp)}
@@ -730,7 +744,7 @@ export default function Home() {
                             <span className="text-[#C86D44] font-mono text-xs uppercase tracking-widest block mb-2">
                                 MR. R Artisan Collective
                             </span>
-                            <p className="text-2xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight uppercase leading-none">
+                            <p className="text-xl sm:text-4xl lg:text-6xl font-extrabold text-white tracking-tight uppercase leading-tight sm:leading-none">
                                 Every cup. Every bite.
                                 <br />
                                 Every moment matters.
@@ -744,16 +758,16 @@ export default function Home() {
 
                     <motion.div
                         {...reveal(staggerParent, 0.1)}
-                        className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-10 text-xs mb-10"
+                        className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-8 sm:gap-10 text-xs mb-10"
                     >
-                        <motion.div variants={revealUp} className="col-span-2 sm:col-span-1">
+                        <motion.div variants={revealUp} className="col-span-2 md:col-span-1">
                             <div className="flex items-center gap-2 text-white font-bold text-base mb-3">
-                                <span className="w-6 h-6 rounded bg-[#C86D44] text-white flex items-center justify-center text-xs">
+                                <span className="w-6 h-6 rounded bg-[#C86D44] text-white flex items-center justify-center text-xs shrink-0">
                                     R
                                 </span>
                                 <span>MR. R STUDIO</span>
                             </div>
-                            <p className="text-[#E4D5C1] leading-relaxed mb-3 text-xs">
+                            <p className="text-[#E4D5C1] leading-relaxed mb-3 text-xs max-w-sm">
                                 Kurasi kopi specialty single origin nusantara dan makanan artisan hangat di jantung
                                 Jakarta.
                             </p>
@@ -808,7 +822,7 @@ export default function Home() {
                             </ul>
                         </motion.div>
 
-                        <motion.div variants={revealUp} className="col-span-2 sm:col-span-1">
+                        <motion.div variants={revealUp} className="col-span-2 md:col-span-1">
                             <h4 className="font-mono text-white text-[11px] tracking-wider uppercase mb-3">Bantuan Cepat</h4>
                             <p className="text-[#E4D5C1] leading-relaxed mb-2 text-xs">
                                 Pertanyaan pesanan atau reservasi meja? Hubungi staf kami langsung.
@@ -856,10 +870,10 @@ function ProductCard({ product, justAdded, onAdd, onBuy, variants }) {
             variants={variants}
             whileHover={{ y: -4 }}
             transition={SPRING_GENTLE}
-            className="group snap-center min-w-[260px] sm:min-w-0 bg-white rounded-2xl border border-[#E6DDD2] overflow-hidden shadow-[0_10px_30px_-8px_rgba(35,27,23,0.08)] flex flex-col justify-between shrink-0"
+            className="group snap-center min-w-[240px] xs:min-w-[260px] sm:min-w-0 bg-white rounded-2xl border border-[#E6DDD2] overflow-hidden shadow-[0_10px_30px_-8px_rgba(35,27,23,0.08)] flex flex-col justify-between shrink-0"
         >
             <div>
-                <div className="relative h-44 sm:h-48 w-full overflow-hidden bg-[#F1E7DA]">
+                <div className="relative h-40 sm:h-44 md:h-48 w-full overflow-hidden bg-[#F1E7DA]">
                     {product.image ? (
                         <img
                             alt={product.name}
@@ -872,7 +886,7 @@ function ProductCard({ product, justAdded, onAdd, onBuy, variants }) {
                         </div>
                     )}
                     {product.category?.name && (
-                        <span className="absolute top-3 left-3 px-2.5 py-1 rounded-md bg-[#17120F]/80 backdrop-blur-sm text-white text-[10px] font-mono tracking-wider">
+                        <span className="absolute top-3 left-3 px-2.5 py-1 rounded-md bg-[#17120F]/80 backdrop-blur-sm text-white text-[10px] font-mono tracking-wider max-w-[75%] truncate">
                             {product.category.name}
                         </span>
                     )}
@@ -936,7 +950,7 @@ function ProductCard({ product, justAdded, onAdd, onBuy, variants }) {
 
 function SpecRow({ label, value, valueClass = "text-white" }) {
     return (
-        <div className="py-2.5 flex justify-between items-center">
+        <div className="py-2.5 flex flex-wrap justify-between items-center gap-x-3 gap-y-1">
             <dt className="text-[#E4D5C1]/70 text-[11px]">{label}</dt>
             <dd className={`font-semibold text-right ${valueClass}`}>{value}</dd>
         </div>

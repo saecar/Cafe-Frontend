@@ -6,18 +6,29 @@ import { getOrderFromHistory, updateOrderStatusInHistory } from "../lib/orderHis
 import { useMidtransSnap } from "../hooks/useMidtransSnap"
 import { api } from "../lib/api"
 
+// Sama seperti getImageUrl di adminApi.js — didefinisikan lokal di sini
+// supaya InvoicePage.jsx tidak bergantung pada path import ke file admin.
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api").replace(/\/$/, "")
+const SERVER_BASE_URL = API_BASE_URL.replace(/\/api$/, "")
+
+function getImageUrl(path) {
+    if (!path) return null
+    if (path.startsWith("http://") || path.startsWith("https://")) return path
+    return `${SERVER_BASE_URL}/storage/${path}`
+}
+
 const statusLabel = {
-    pending: "Menunggu pembayaran",
-    processing: "Dibayar / diproses",
+    pending: "Menunggu Pembayaran",
+    processing: "Dibayar / Diproses",
     completed: "Selesai",
     cancelled: "Dibatalkan",
 }
 
-const statusAccent = {
-    pending: "text-[#ffd56b]",
-    processing: "text-[#feb47b]",
-    completed: "text-emerald-500",
-    cancelled: "text-[#ff6239]",
+const statusStyle = {
+    pending: "bg-[#f7e6cf] text-[#8a5a1f]",
+    processing: "bg-[#fbe3d6] text-[#a34a1f]",
+    completed: "bg-[#e1ecdf] text-[#3f6b45]",
+    cancelled: "bg-[#f3ded9] text-[#8a4a3a]",
 }
 
 function InvoicePage() {
@@ -67,20 +78,20 @@ function InvoicePage() {
 
     if (!order) {
         return (
-            <section className="min-h-screen px-4 sm:px-6 lg:px-8 py-20 md:py-28 bg-[#faf8f5] text-center border-b-4 border-[#16120e]">
-                <span className="font-mono text-xs font-black uppercase tracking-widest text-[#ff6239] bg-[#16120e] px-2.5 py-1 inline-block shadow-[3px_3px_0px_#16120e] mb-4">
+            <section className="min-h-screen px-4 sm:px-6 py-20 md:py-28 bg-[#fff8f0] text-center">
+                <span className="inline-block text-xs font-semibold uppercase tracking-wide text-[#a34a1f] bg-[#fbe3d6] px-3 py-1 rounded-full mb-4">
                     404
                 </span>
-                <h1 className="font-display text-3xl md:text-5xl font-black uppercase text-[#16120e] mb-3">
+                <h1 className="text-2xl md:text-4xl font-semibold text-[#2c221e] mb-3">
                     Invoice Tidak Ditemukan
                 </h1>
-                <p className="font-mono text-sm text-stone-600 mb-8 max-w-md mx-auto leading-relaxed">
+                <p className="text-sm text-[#6b5f58] mb-8 max-w-md mx-auto leading-relaxed">
                     Invoice ini cuma tersimpan di browser tempat kamu checkout. Coba buka lagi dari
                     perangkat itu, atau lihat riwayat pesananmu.
                 </p>
                 <Link
                     to="/pesanan-saya"
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-[#16120e] text-[#faf8f5] font-mono text-xs font-black uppercase border-2 border-[#16120e] shadow-[4px_4px_0px_#16120e] hover:bg-[#ff6239] hover:text-[#16120e] transition-all"
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-[#2c221e] text-[#fff8f0] text-sm font-semibold rounded-2xl hover:bg-[#4a3a32] transition-colors"
                 >
                     Pesanan Saya
                 </Link>
@@ -88,127 +99,161 @@ function InvoicePage() {
         )
     }
 
+    const items = order.orderItems || order.order_items || []
+    const subtotal = items.reduce((sum, item) => sum + Number(item.subtotal ?? item.price * item.quantity), 0)
+    const hasAdjustment = Math.abs(subtotal - Number(order.total_amount)) > 0.5
+
     return (
-        <section className="min-h-screen px-4 sm:px-6 lg:px-8 py-12 md:py-20 bg-[#faf8f5] border-b-4 border-[#16120e]">
+        <section className="min-h-screen bg-[#fff8f0] px-4 sm:px-6 py-8 md:py-12">
             <motion.div
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="max-w-xl mx-auto border-4 border-[#16120e] bg-[#faf8f5] shadow-[10px_10px_0px_#16120e] print:border-0 print:shadow-none overflow-hidden"
+                className="max-w-xl mx-auto"
             >
-                <div className="h-3 w-full bg-gradient-to-r from-[#ff6239] via-[#feb47b] to-[#ffd56b] border-b-2 border-[#16120e] print:hidden" />
+                {/* Back link */}
+                <Link
+                    to="/pesanan-saya"
+                    className="inline-flex items-center gap-1.5 text-sm text-[#6b5f58] hover:text-[#2c221e] transition-colors mb-4 print:hidden"
+                >
+                    <span aria-hidden="true">←</span> Pesanan Saya
+                </Link>
 
-                <div className="p-6 md:p-10">
-                    <div className="text-center mb-8">
-                        <span className="font-mono text-xs font-black uppercase tracking-widest text-[#ff6239] bg-[#16120e] px-2.5 py-1 inline-block shadow-[3px_3px_0px_#16120e] mb-4 print:hidden">
-                            Invoice
-                        </span>
-                        <h1 className="font-display text-3xl md:text-4xl font-black uppercase text-[#16120e] mb-1">
-                            Terima Kasih!
-                        </h1>
-                        <p className="font-mono text-xs text-stone-600">Pesananmu sudah kami terima.</p>
-                    </div>
+                <div className="bg-[#f9f3eb] rounded-2xl border border-[#e6ded5] shadow-sm overflow-hidden print:border-0 print:shadow-none">
 
-                    <div className="font-mono text-sm space-y-2 mb-6">
-                        <div className="flex justify-between border-b border-stone-300 pb-2">
-                            <span className="text-stone-500 uppercase text-xs">No. Pesanan</span>
-                            <span className="font-bold text-[#16120e]">{order.order_number}</span>
-                        </div>
-                        {order.created_at && (
-                            <div className="flex justify-between border-b border-stone-300 pb-2">
-                                <span className="text-stone-500 uppercase text-xs">Tanggal</span>
-                                <span className="text-[#16120e]">{formatDate(order.created_at)}</span>
-                            </div>
-                        )}
-                        <div className="flex justify-between border-b-2 border-[#16120e] pb-2">
-                            <span className="text-stone-500 uppercase text-xs">Status</span>
+                    {/* Status header */}
+                    <div className="bg-[#2c221e] text-[#f6f0e8] p-5 sm:p-6 flex flex-col gap-2">
+                        <div className="flex items-center justify-between gap-3">
                             <span
-                                className={`font-bold uppercase text-xs flex items-center gap-2 ${
-                                    statusAccent[displayStatus] ?? "text-[#16120e]"
+                                className={`inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full ${
+                                    statusStyle[displayStatus] ?? "bg-[#4a3a32] text-[#f6f0e8]"
                                 }`}
                             >
-                                {statusLabel[displayStatus] ?? displayStatus}
                                 {displayStatus === "pending" && (
-                                    <span className="inline-block w-2 h-2 rounded-full bg-[#ffd56b] animate-pulse" />
+                                    <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
                                 )}
+                                {statusLabel[displayStatus] ?? displayStatus}
                             </span>
                         </div>
-                    </div>
-
-                    <div className="border-2 border-[#16120e] p-4 mb-4 bg-white/40">
-                        <h2 className="font-mono text-[11px] font-black uppercase tracking-widest text-stone-500 mb-2">
-                            Detail Pemesan
-                        </h2>
-                        <p className="text-sm font-semibold text-[#16120e]">{order.customer_name}</p>
-                        <p className="text-xs text-stone-600 font-mono">
-                            {order.email} · {order.phone}
-                        </p>
-                        <p className="text-xs text-stone-600 font-mono">{order.address}</p>
-                    </div>
-
-                    <div className="border-2 border-[#16120e] p-4 mb-4">
-                        <h2 className="font-mono text-[11px] font-black uppercase tracking-widest text-stone-500 mb-3">
-                            Item
-                        </h2>
-                        <div className="flex flex-col gap-2">
-                            {(order.orderItems || order.order_items || []).map((item) => (
-                                <div
-                                    key={item.id ?? item.product_id}
-                                    className="flex justify-between text-sm font-mono"
-                                >
-                                    <span className="text-[#16120e]">
-                                        {item.product?.name ?? item.name}{" "}
-                                        <span className="text-stone-500">x{item.quantity}</span>
-                                    </span>
-                                    <span className="text-[#16120e]">
-                                        {formatRupiah(item.subtotal ?? item.price * item.quantity)}
-                                    </span>
-                                </div>
-                            ))}
+                        <div>
+                            <p className="text-xs uppercase tracking-wide text-[#c9beb5]">No. Pesanan</p>
+                            <h1 className="text-xl sm:text-2xl font-semibold tracking-tight">{order.order_number}</h1>
                         </div>
+                        {order.created_at && (
+                            <p className="text-xs text-[#c9beb5]">{formatDate(order.created_at)}</p>
+                        )}
                     </div>
 
-                    <div className="flex justify-between items-center border-2 border-[#16120e] bg-[#16120e] text-[#faf8f5] px-4 py-4 mb-8">
-                        <span className="font-mono text-xs font-bold uppercase text-[#feb47b]">Total</span>
-                        <span className="font-display font-black text-xl">{formatRupiah(order.total_amount)}</span>
-                    </div>
+                    <div className="p-5 sm:p-8 space-y-5">
 
-                    {showPaymentForm && (
-                        <div className="border-2 border-dashed border-[#16120e] p-4 mb-8 print:hidden">
-                            <h2 className="font-mono text-[11px] font-black uppercase tracking-widest text-stone-500 mb-3">
-                                Selesaikan Pembayaran
+                        {/* Customer detail */}
+                        <div className="bg-white rounded-xl border border-[#e6ded5] p-4">
+                            <h2 className="text-xs font-semibold uppercase tracking-wide text-[#8c7a6b] mb-2">
+                                Detail Pemesan
                             </h2>
-                            <div id="snap-container"></div>
-                            <p className="font-mono text-xs text-stone-500 mt-3 text-center">
-                                Mengecek status pembayaran otomatis...
+                            <p className="text-sm font-semibold text-[#2c221e]">{order.customer_name}</p>
+                            <p className="text-xs text-[#6b5f58] mt-0.5">
+                                {order.email} · {order.phone}
                             </p>
+                            {order.address && (
+                                <p className="text-xs text-[#6b5f58] mt-0.5">{order.address}</p>
+                            )}
                         </div>
-                    )}
 
-                    {!showPaymentForm && displayStatus !== "pending" && (
-                        <div className="border-2 border-[#16120e] pt-6 pb-6 mb-8 text-center print:hidden bg-emerald-50">
-                            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[#16120e] text-[#faf8f5] text-xl mb-3 border-2 border-[#16120e]">
-                                ✓
+                        {/* Items */}
+                        <div className="space-y-2.5">
+                            <div className="flex items-center justify-between px-0.5">
+                                <h2 className="text-xs font-semibold uppercase tracking-wide text-[#8c7a6b]">Item</h2>
+                                <span className="text-xs text-[#8c7a6b]">{items.length} Menu</span>
                             </div>
-                            <p className="font-mono font-bold text-sm uppercase text-[#16120e] mb-1">
-                                Pembayaran Berhasil
-                            </p>
-                            <p className="font-mono text-xs text-stone-600">Pesananmu sedang kami siapkan.</p>
+                            <div className="flex flex-col gap-2">
+                                {items.map((item) => {
+                                    const name = item.product?.name ?? item.name
+                                    const image = item.product?.image ? getImageUrl(item.product.image) : null
+                                    return (
+                                        <div
+                                            key={item.id ?? item.product_id}
+                                            className="flex items-center gap-3 bg-white rounded-xl border border-[#e6ded5] p-3"
+                                        >
+                                            {image ? (
+                                                <img
+                                                    src={image}
+                                                    alt={name}
+                                                    className="w-12 h-12 rounded-lg object-cover flex-shrink-0 bg-[#f3ede5]"
+                                                />
+                                            ) : (
+                                                <div className="w-12 h-12 rounded-lg bg-[#f3ede5] flex-shrink-0" />
+                                            )}
+                                            <div className="flex-1 min-w-0 flex items-baseline justify-between gap-2">
+                                                <div className="min-w-0">
+                                                    <p className="text-sm font-medium text-[#2c221e] truncate">{name}</p>
+                                                    <p className="text-xs text-[#8c7a6b]">Qty: {item.quantity}x</p>
+                                                </div>
+                                                <span className="text-sm font-semibold text-[#2c221e] whitespace-nowrap">
+                                                    {formatRupiah(item.subtotal ?? item.price * item.quantity)}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    )
+                                })}
+                            </div>
                         </div>
-                    )}
 
-                    <div className="flex flex-col md:flex-row gap-3 print:hidden">
-                        <button
-                            onClick={() => window.print()}
-                            className="flex-1 border-2 border-[#16120e] text-[#16120e] py-3 font-mono text-xs font-black uppercase hover:bg-[#16120e] hover:text-[#faf8f5] transition-all"
-                        >
-                            Cetak Invoice
-                        </button>
-                        <Link
-                            to="/menu"
-                            className="flex-1 text-center bg-[#16120e] text-[#faf8f5] py-3 font-mono text-xs font-black uppercase border-2 border-[#16120e] shadow-[4px_4px_0px_#ff6239] hover:bg-[#ff6239] hover:text-[#16120e] transition-all"
-                        >
-                            Pesan Lagi
-                        </Link>
+                        {/* Total */}
+                        <div className="bg-white rounded-xl border border-[#e6ded5] p-4 space-y-2">
+                            <div className="flex items-center justify-between text-sm text-[#6b5f58]">
+                                <span>Subtotal</span>
+                                <span>{formatRupiah(subtotal)}</span>
+                            </div>
+                            {hasAdjustment && (
+                                <div className="flex items-center justify-between text-sm text-[#6b5f58]">
+                                    <span>Biaya &amp; Penyesuaian Lain</span>
+                                    <span>{formatRupiah(Number(order.total_amount) - subtotal)}</span>
+                                </div>
+                            )}
+                            <div className="flex items-center justify-between pt-2 border-t border-[#e6ded5]">
+                                <span className="text-sm font-semibold text-[#2c221e]">Total Pembayaran</span>
+                                <span className="text-lg font-semibold text-[#a34a1f]">{formatRupiah(order.total_amount)}</span>
+                            </div>
+                        </div>
+
+                        {/* Payment */}
+                        {showPaymentForm && (
+                            <div className="bg-white rounded-xl border border-dashed border-[#d2c4bf] p-4 print:hidden">
+                                <h2 className="text-xs font-semibold uppercase tracking-wide text-[#8c7a6b] mb-3">
+                                    Selesaikan Pembayaran
+                                </h2>
+                                <div id="snap-container"></div>
+                                <p className="text-xs text-[#8c7a6b] mt-3 text-center">
+                                    Mengecek status pembayaran otomatis...
+                                </p>
+                            </div>
+                        )}
+
+                        {!showPaymentForm && displayStatus !== "pending" && displayStatus !== "cancelled" && (
+                            <div className="bg-[#eef3ec] rounded-xl p-5 text-center print:hidden">
+                                <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-[#3f6b45] text-white text-base mb-2">
+                                    ✓
+                                </div>
+                                <p className="text-sm font-semibold text-[#2c221e] mb-1">Pembayaran Berhasil</p>
+                                <p className="text-xs text-[#6b5f58]">Pesananmu sedang kami siapkan.</p>
+                            </div>
+                        )}
+
+                        {/* Actions */}
+                        <div className="flex flex-col sm:flex-row gap-2.5 print:hidden pt-1">
+                            <button
+                                onClick={() => window.print()}
+                                className="flex-1 border border-[#d2c4bf] text-[#2c221e] py-3 rounded-2xl text-sm font-semibold hover:bg-[#f3ede5] transition-colors"
+                            >
+                                Cetak Invoice
+                            </button>
+                            <Link
+                                to="/menu"
+                                className="flex-1 text-center bg-[#c86d44] text-white py-3 rounded-2xl text-sm font-semibold hover:bg-[#b25f39] transition-colors"
+                            >
+                                Pesan Lagi
+                            </Link>
+                        </div>
                     </div>
                 </div>
             </motion.div>

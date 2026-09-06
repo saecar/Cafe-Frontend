@@ -72,6 +72,21 @@ export const adminApi = {
         return request(`/admin/products/${id}`, { method: "POST", body: formData })
     },
     deleteProduct: (id) => request(`/admin/products/${id}`, { method: "DELETE" }),
+
+    // Orders — status: 'pending' | 'processing' | 'completed' | 'cancelled'
+    // GET /admin/orders → { orders: { data: [...], current_page, total, ... } } (Laravel paginator)
+    getOrders: (params = {}) => {
+        const query = new URLSearchParams(params).toString()
+        return request(`/admin/orders${query ? `?${query}` : ""}`)
+    },
+    // GET /admin/orders/{order} → { order: { ...order_items, payment } }
+    getOrder: (id) => request(`/admin/orders/${id}`),
+    // PATCH /admin/orders/{order}/status → returns the updated order object directly (no wrapper)
+    updateOrderStatus: (id, status) =>
+        request(`/admin/orders/${id}/status`, {
+            method: "PATCH",
+            body: JSON.stringify({ status }),
+        }),
 }
 
 export { ApiError }
