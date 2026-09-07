@@ -2,7 +2,7 @@ const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || "http://localhost:800
     .trim()
     .replace(/\/+$/, "")
 
-// Base URL server tanpa "/api", dipakai buat akses file di /storage
+// Base URL server tanpa "/api", dipakai buat akses file di /uploads
 const SERVER_BASE_URL = API_BASE_URL.replace(/\/api$/, "")
 
 class ApiError extends Error {
@@ -46,11 +46,13 @@ async function request(path, options = {}) {
     return payload
 }
 
-// Bikin URL gambar produk penuh dari path relatif yang dikirim backend (mis. "products/xxx.jpg")
+// Bikin URL gambar produk penuh dari path relatif yang dikirim backend (mis. "products/xxx.jpg").
+// Folder public/uploads di-mount sebagai volume persisten di Wasmer, jadi URL-nya
+// lewat /uploads/... bukan /storage/... lagi (lihat config/filesystems.php di backend).
 export function getImageUrl(path) {
     if (!path) return null
     if (path.startsWith("http://") || path.startsWith("https://")) return path
-    return `${SERVER_BASE_URL}/storage/${path}`
+    return `${SERVER_BASE_URL}/uploads/${path}`
 }
 
 export const api = {
