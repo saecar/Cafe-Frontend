@@ -44,10 +44,13 @@ async function request(path, options = {}) {
     return payload
 }
 
+// Folder public/uploads di-mount sebagai volume persisten di Wasmer
+// (lihat app.yaml + config/filesystems.php disk 'public'), jadi URL
+// gambar sekarang lewat /uploads/... bukan /storage/... lagi.
 export function getImageUrl(path) {
     if (!path) return null
     if (path.startsWith("http://") || path.startsWith("https://")) return path
-    return `${SERVER_BASE_URL}/storage/${path}`
+    return `${SERVER_BASE_URL}/uploads/${path}`
 }
 
 export const adminApi = {
